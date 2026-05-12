@@ -25,37 +25,69 @@ export default function Login() {
   }
 
   return (
-    <div className="max-w-sm mx-auto mt-20">
-      <h1 className="text-2xl font-bold text-blue-200 mb-6 text-center">登录</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="email"
-          placeholder="邮箱"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-          className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
-        />
-        <input
-          type="password"
-          placeholder="密码"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-          className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
-        />
-        {error && <p className="text-red-400 text-sm">{error}</p>}
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white rounded-lg"
-        >
-          {submitting ? '登录中...' : '登录'}
-        </button>
-      </form>
-      <p className="text-center text-slate-400 mt-4 text-sm">
-        没有账号？<Link to="/register" className="text-blue-400 hover:underline">注册</Link>
-      </p>
+    <div className="max-w-sm mx-auto mt-12">
+      <div className="card">
+        <div className="text-center mb-8">
+          <div className="text-4xl mb-3">🍾</div>
+          <h1 className="text-2xl font-bold text-gray-900">欢迎回来</h1>
+          <p className="text-gray-500 mt-1">登录你的漂流瓶账号</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="input-group">
+            <label className="input-label">邮箱地址</label>
+            <input
+              type="email"
+              placeholder="your@email.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="input-group">
+            <label className="input-label">密码</label>
+            <input
+              type="password"
+              placeholder="输入密码"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          {error && (
+            <div className="error-text">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              {error}
+            </div>
+          )}
+          <button
+            type="submit"
+            disabled={submitting}
+            className="btn-primary"
+          >
+            {submitting ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                登录中...
+              </span>
+            ) : '登录'}
+          </button>
+        </form>
+
+        <div className="mt-6 pt-6 border-t border-gray-100 text-center">
+          <p className="text-sm text-gray-500">
+            没有账号？{' '}
+            <Link to="/register" className="text-indigo-600 hover:text-indigo-700 font-medium transition-colors">
+              注册
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

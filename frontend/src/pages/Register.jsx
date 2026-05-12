@@ -4,13 +4,12 @@ import { useAuth } from '../contexts/AuthContext'
 import { sendCode } from '../api/auth'
 
 export default function Register() {
-  const [step, setStep] = useState(1) // 1=输入邮箱, 2=输入验证码, 3=设置密码
+  const [step, setStep] = useState(1)
   const [email, setEmail] = useState('')
   const [code, setCode] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const [codeSent, setCodeSent] = useState(false)
   const [countdown, setCountdown] = useState(0)
   const { register } = useAuth()
   const navigate = useNavigate()
@@ -20,7 +19,6 @@ export default function Register() {
     setSubmitting(true)
     try {
       await sendCode(email)
-      setCodeSent(true)
       setStep(2)
       setCountdown(60)
       const timer = setInterval(() => {
@@ -63,89 +61,145 @@ export default function Register() {
   }
 
   return (
-    <div className="max-w-sm mx-auto mt-20">
-      <h1 className="text-2xl font-bold text-blue-200 mb-6 text-center">注册</h1>
-
-      {step === 1 && (
-        <div className="space-y-4">
-          <input
-            type="email"
-            placeholder="请输入邮箱"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
-          />
-          {error && <p className="text-red-400 text-sm">{error}</p>}
-          <button
-            onClick={handleSendCode}
-            disabled={submitting || !email}
-            className="w-full py-3 bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white rounded-lg"
-          >
-            {submitting ? '发送中...' : '发送验证码'}
-          </button>
+    <div className="max-w-sm mx-auto mt-12">
+      <div className="card">
+        <div className="text-center mb-8">
+          <div className="text-4xl mb-3">🍾</div>
+          <h1 className="text-2xl font-bold text-gray-900">注册账号</h1>
+          <p className="text-gray-500 mt-1">开始你的漂流瓶之旅</p>
         </div>
-      )}
 
-      {step === 2 && (
-        <div className="space-y-4">
-          <p className="text-slate-400 text-sm">
-            验证码已发送到 <span className="text-white">{email}</span>
+        {step === 1 && (
+          <div className="space-y-5">
+            <div className="input-group">
+              <label className="input-label">邮箱地址</label>
+              <input
+                type="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            {error && (
+              <div className="error-text">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {error}
+              </div>
+            )}
+            <button
+              onClick={handleSendCode}
+              disabled={submitting || !email}
+              className="btn-primary"
+            >
+              {submitting ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  发送中...
+                </span>
+              ) : '发送验证码'}
+            </button>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className="space-y-5">
+            <div className="bg-indigo-50 rounded-xl p-4 text-center">
+              <p className="text-sm text-indigo-600">
+                验证码已发送到
+              </p>
+              <p className="font-medium text-indigo-900 mt-1">{email}</p>
+            </div>
+            <div className="input-group">
+              <label className="input-label">验证码</label>
+              <input
+                type="text"
+                placeholder="000000"
+                value={code}
+                onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                maxLength={6}
+                className="text-center text-2xl tracking-[0.5em] font-mono"
+              />
+            </div>
+            {error && (
+              <div className="error-text">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {error}
+              </div>
+            )}
+            <button
+              onClick={handleVerifyCode}
+              disabled={code.length !== 6}
+              className="btn-primary"
+            >
+              下一步
+            </button>
+            <button
+              onClick={handleSendCode}
+              disabled={countdown > 0}
+              className="w-full text-sm text-gray-500 hover:text-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed py-2"
+            >
+              {countdown > 0 ? `${countdown} 秒后可重发` : '重新发送验证码'}
+            </button>
+          </div>
+        )}
+
+        {step === 3 && (
+          <form onSubmit={handleRegister} className="space-y-5">
+            <div className="bg-green-50 rounded-xl p-4 text-center">
+              <div className="text-green-600 font-medium flex items-center justify-center gap-2">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                邮箱验证通过
+              </div>
+              <p className="text-sm text-green-600 mt-1">{email}</p>
+            </div>
+            <div className="input-group">
+              <label className="input-label">设置密码</label>
+              <input
+                type="password"
+                placeholder="至少 6 位"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+                minLength={6}
+              />
+            </div>
+            {error && (
+              <div className="error-text">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {error}
+              </div>
+            )}
+            <button
+              type="submit"
+              disabled={submitting}
+              className="btn-primary"
+            >
+              {submitting ? '注册中...' : '完成注册'}
+            </button>
+          </form>
+        )}
+
+        <div className="mt-6 pt-6 border-t border-gray-100 text-center">
+          <p className="text-sm text-gray-500">
+            已有账号？{' '}
+            <Link to="/login" className="text-indigo-600 hover:text-indigo-700 font-medium transition-colors">
+              登录
+            </Link>
           </p>
-          <input
-            type="text"
-            placeholder="请输入 6 位验证码"
-            value={code}
-            onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-            maxLength={6}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 text-center text-2xl tracking-widest"
-          />
-          {error && <p className="text-red-400 text-sm">{error}</p>}
-          <button
-            onClick={handleVerifyCode}
-            disabled={code.length !== 6}
-            className="w-full py-3 bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white rounded-lg"
-          >
-            下一步
-          </button>
-          <button
-            onClick={handleSendCode}
-            disabled={countdown > 0}
-            className="w-full text-sm text-slate-400 hover:text-white disabled:opacity-50"
-          >
-            {countdown > 0 ? `${countdown} 秒后可重发` : '重新发送验证码'}
-          </button>
         </div>
-      )}
-
-      {step === 3 && (
-        <form onSubmit={handleRegister} className="space-y-4">
-          <p className="text-slate-400 text-sm">
-            邮箱 <span className="text-white">{email}</span> 验证通过，请设置密码
-          </p>
-          <input
-            type="password"
-            placeholder="设置密码（至少 6 位）"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-            minLength={6}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
-          />
-          {error && <p className="text-red-400 text-sm">{error}</p>}
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full py-3 bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white rounded-lg"
-          >
-            {submitting ? '注册中...' : '完成注册'}
-          </button>
-        </form>
-      )}
-
-      <p className="text-center text-slate-400 mt-4 text-sm">
-        已有账号？<Link to="/login" className="text-blue-400 hover:underline">登录</Link>
-      </p>
+      </div>
     </div>
   )
 }

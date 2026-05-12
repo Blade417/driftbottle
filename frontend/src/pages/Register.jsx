@@ -3,6 +3,16 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { sendCode } from '../api/auth'
 
+function formatError(err) {
+  const detail = err.response?.data?.detail
+  if (!detail) return '操作失败'
+  if (typeof detail === 'string') return detail
+  if (Array.isArray(detail)) {
+    return detail.map(e => e.msg || JSON.stringify(e)).join('; ')
+  }
+  return JSON.stringify(detail)
+}
+
 export default function Register() {
   const [step, setStep] = useState(1)
   const [email, setEmail] = useState('')
@@ -31,7 +41,7 @@ export default function Register() {
         })
       }, 1000)
     } catch (err) {
-      setError(err.response?.data?.detail || '发送失败')
+      setError(formatError(err))
     } finally {
       setSubmitting(false)
     }
@@ -54,7 +64,7 @@ export default function Register() {
       await register({ email, code, password })
       navigate('/login')
     } catch (err) {
-      setError(err.response?.data?.detail || '注册失败')
+      setError(formatError(err))
     } finally {
       setSubmitting(false)
     }

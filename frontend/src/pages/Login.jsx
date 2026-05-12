@@ -2,6 +2,16 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
+function formatError(err) {
+  const detail = err.response?.data?.detail
+  if (!detail) return '操作失败'
+  if (typeof detail === 'string') return detail
+  if (Array.isArray(detail)) {
+    return detail.map(e => e.msg || JSON.stringify(e)).join('; ')
+  }
+  return JSON.stringify(detail)
+}
+
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -18,7 +28,7 @@ export default function Login() {
       await login(email, password)
       navigate('/')
     } catch (err) {
-      setError(err.response?.data?.detail || '登录失败')
+      setError(formatError(err))
     } finally {
       setSubmitting(false)
     }

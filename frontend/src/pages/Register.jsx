@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function Register() {
@@ -7,8 +7,8 @@ export default function Register() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [registered, setRegistered] = useState(false)
   const { register } = useAuth()
-  const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -16,12 +16,33 @@ export default function Register() {
     setSubmitting(true)
     try {
       await register(email, password)
-      navigate('/')
+      setRegistered(true)
     } catch (err) {
       setError(err.response?.data?.detail || '注册失败')
     } finally {
       setSubmitting(false)
     }
+  }
+
+  if (registered) {
+    return (
+      <div className="max-w-sm mx-auto mt-20 text-center">
+        <div className="text-5xl mb-4">📧</div>
+        <h1 className="text-2xl font-bold text-blue-200 mb-2">注册成功</h1>
+        <p className="text-slate-400 mb-2">
+          验证邮件已发送到 <span className="text-white">{email}</span>
+        </p>
+        <p className="text-slate-400 mb-6">
+          请查收邮件并点击链接完成验证，然后登录
+        </p>
+        <Link
+          to="/login"
+          className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg"
+        >
+          去登录
+        </Link>
+      </div>
+    )
   }
 
   return (

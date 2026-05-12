@@ -14,3 +14,13 @@ export function login(data) {
 export function getMe() {
   return request.get('/auth/me')
 }
+
+// 邮箱验证
+export function verifyEmail(token) {
+  return request.post('/auth/verify', { token })
+}
+
+// 重发验证邮件
+export function resendVerify(email) {
+  return request.post('/auth/resend-verify', { email })
+}

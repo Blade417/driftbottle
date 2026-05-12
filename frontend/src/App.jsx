@@ -7,7 +7,6 @@ import Mine from './pages/Mine'
 import Write from './pages/Write'
 import Pick from './pages/Pick'
 import Detail from './pages/Detail'
-import Verify from './pages/Verify'
 import { getAvatarUrl } from './utils/avatar'
 
 export default function App() {
@@ -20,7 +19,6 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/verify" element={<Verify />} />
             {/* 受保护的路由示例 */}
             <Route path="/mine" element={<RequireAuth><Mine /></RequireAuth>} />
             <Route path="/write" element={<RequireAuth><Write /></RequireAuth>} />

@@ -61,12 +61,12 @@ export default function Register() {
   }
 
   return (
-    <div className="max-w-sm mx-auto mt-12">
+    <div className="max-w-sm mx-auto mt-8">
       <div className="card">
         <div className="text-center mb-8">
-          <div className="text-4xl mb-3">🍾</div>
-          <h1 className="text-2xl font-bold text-gray-900">注册账号</h1>
-          <p className="text-gray-500 mt-1">开始你的漂流瓶之旅</p>
+          <div className="text-5xl mb-4" style={{ animation: 'float 6s ease-in-out infinite' }}>🍾</div>
+          <h1 className="text-2xl font-bold text-white">加入漂流</h1>
+          <p className="text-white/40 mt-2">开始你的海上旅程</p>
         </div>
 
         {step === 1 && (
@@ -83,7 +83,7 @@ export default function Register() {
             </div>
             {error && (
               <div className="error-text">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
                 {error}
@@ -109,11 +109,11 @@ export default function Register() {
 
         {step === 2 && (
           <div className="space-y-5">
-            <div className="bg-indigo-50 rounded-xl p-4 text-center">
-              <p className="text-sm text-indigo-600">
+            <div className="bg-sky-500/10 border border-sky-500/20 rounded-xl p-4 text-center">
+              <p className="text-sm text-sky-400">
                 验证码已发送到
               </p>
-              <p className="font-medium text-indigo-900 mt-1">{email}</p>
+              <p className="font-medium text-sky-300 mt-1">{email}</p>
             </div>
             <div className="input-group">
               <label className="input-label">验证码</label>
@@ -123,12 +123,12 @@ export default function Register() {
                 value={code}
                 onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                 maxLength={6}
-                className="text-center text-2xl tracking-[0.5em] font-mono"
+                className="text-center text-3xl tracking-[0.5em] font-mono"
               />
             </div>
             {error && (
               <div className="error-text">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
                 {error}
@@ -144,7 +144,7 @@ export default function Register() {
             <button
               onClick={handleSendCode}
               disabled={countdown > 0}
-              className="w-full text-sm text-gray-500 hover:text-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed py-2"
+              className="w-full text-sm text-white/40 hover:text-sky-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed py-2"
             >
               {countdown > 0 ? `${countdown} 秒后可重发` : '重新发送验证码'}
             </button>
@@ -153,14 +153,14 @@ export default function Register() {
 
         {step === 3 && (
           <form onSubmit={handleRegister} className="space-y-5">
-            <div className="bg-green-50 rounded-xl p-4 text-center">
-              <div className="text-green-600 font-medium flex items-center justify-center gap-2">
+            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 text-center">
+              <div className="text-emerald-400 font-medium flex items-center justify-center gap-2">
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
                 邮箱验证通过
               </div>
-              <p className="text-sm text-green-600 mt-1">{email}</p>
+              <p className="text-sm text-emerald-400/70 mt-1">{email}</p>
             </div>
             <div className="input-group">
               <label className="input-label">设置密码</label>
@@ -175,7 +175,7 @@ export default function Register() {
             </div>
             {error && (
               <div className="error-text">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
                 {error}
@@ -191,10 +191,10 @@ export default function Register() {
           </form>
         )}
 
-        <div className="mt-6 pt-6 border-t border-gray-100 text-center">
-          <p className="text-sm text-gray-500">
+        <div className="mt-6 pt-6 border-t border-white/5 text-center">
+          <p className="text-sm text-white/40">
             已有账号？{' '}
-            <Link to="/login" className="text-indigo-600 hover:text-indigo-700 font-medium transition-colors">
+            <Link to="/login" className="text-sky-400 hover:text-sky-300 font-medium transition-colors">
               登录
             </Link>
           </p>

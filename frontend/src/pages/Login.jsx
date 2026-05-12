@@ -25,12 +25,12 @@ export default function Login() {
   }
 
   return (
-    <div className="max-w-sm mx-auto mt-12">
+    <div className="max-w-sm mx-auto mt-8">
       <div className="card">
         <div className="text-center mb-8">
-          <div className="text-4xl mb-3">🍾</div>
-          <h1 className="text-2xl font-bold text-gray-900">欢迎回来</h1>
-          <p className="text-gray-500 mt-1">登录你的漂流瓶账号</p>
+          <div className="text-5xl mb-4" style={{ animation: 'float 6s ease-in-out infinite' }}>🍾</div>
+          <h1 className="text-2xl font-bold text-white">欢迎回来</h1>
+          <p className="text-white/40 mt-2">继续你的漂流之旅</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -56,7 +56,7 @@ export default function Login() {
           </div>
           {error && (
             <div className="error-text">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
               {error}
@@ -79,10 +79,10 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="mt-6 pt-6 border-t border-gray-100 text-center">
-          <p className="text-sm text-gray-500">
+        <div className="mt-6 pt-6 border-t border-white/5 text-center">
+          <p className="text-sm text-white/40">
             没有账号？{' '}
-            <Link to="/register" className="text-indigo-600 hover:text-indigo-700 font-medium transition-colors">
+            <Link to="/register" className="text-sky-400 hover:text-sky-300 font-medium transition-colors">
               注册
             </Link>
           </p>

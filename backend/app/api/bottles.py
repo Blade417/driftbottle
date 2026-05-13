@@ -108,6 +108,8 @@ async def bottle_detail(
         ))
 
     next_round = len(reply_outs) + 1
+    # TODO: removed 状态的瓶子走到此分支会得到"瓶子不在你手上"的错误
+    # 等真有 removed 数据时需要单独处理，返回"瓶子已被下架"
     if bottle.status != "picked":
         next_round_is_mine = False
     elif next_round % 2 == 1:

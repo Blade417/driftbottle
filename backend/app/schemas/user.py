@@ -22,6 +22,7 @@ class UserOut(BaseModel):
     email: str
     avatar_seed: str
     is_verified: bool
+    is_admin: bool
     created_at: datetime
 
     class Config:

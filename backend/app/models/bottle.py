@@ -15,6 +15,7 @@ class Bottle(Base):
         String(36), ForeignKey("users.id"), nullable=False, index=True
     )
     content: Mapped[str] = mapped_column(Text, nullable=False)
+    # status 可选值: floating / picked / closed / removed
     status: Mapped[str] = mapped_column(
         String(16), nullable=False, default="floating", index=True
     )

@@ -5,17 +5,9 @@ from app.schemas.report import ReportCreate
 from app.services.report_service import create_report
 from app.api.deps import get_current_user
 from app.models.user import User
-from app.limiter import limiter
-from slowapi.util import get_remote_address
+from app.limiter import limiter, _user_or_ip_key
 
 router = APIRouter(prefix="/api/reports", tags=["reports"])
-
-
-def _user_or_ip_key(request: Request) -> str:
-    user = getattr(request.state, "current_user", None)
-    if user is not None:
-        return f"user:{user.id}"
-    return f"ip:{get_remote_address(request)}"
 
 
 @router.post("", status_code=201)

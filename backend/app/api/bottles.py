@@ -9,8 +9,7 @@ from app.services.reply_service import create_reply, get_replies_by_bottle
 from app.api.deps import get_current_user
 from app.models.user import User
 from app.models.reply import Reply
-from app.limiter import limiter
-from slowapi.util import get_remote_address
+from app.limiter import limiter, _user_or_ip_key
 
 router = APIRouter(prefix="/api/bottles", tags=["bottles"])
 
@@ -26,13 +25,6 @@ def _make_bottle_out(bottle, reply_count: int = 0) -> BottleOut:
         created_at=bottle.created_at,
         picked_at=bottle.picked_at,
     )
-
-
-def _user_or_ip_key(request: Request) -> str:
-    user = getattr(request.state, "current_user", None)
-    if user is not None:
-        return f"user:{user.id}"
-    return f"ip:{get_remote_address(request)}"
 
 
 @router.post("", response_model=BottleOut, status_code=status.HTTP_201_CREATED)
@@ -78,7 +70,6 @@ async def my_bottles(
         raise HTTPException(status_code=400, detail="type 必须是 thrown 或 picked")
     bottles = await get_my_bottles(db, current_user.id, type_)
     result = []
-    # TODO: N+1 查询，部署 PostgreSQL 时改成 outerjoin + group_by 一次查出 reply_count
     for b in bottles:
         await db.refresh(b, ["author", "picker"])
         cnt = await db.execute(select(func.count()).where(Reply.bottle_id == b.id))
@@ -116,9 +107,6 @@ async def bottle_detail(
             is_mine=(r.author_id == uid),
         ))
 
-    # 计算下一轮该谁写
-    # TODO: status=closed 时前端要显示"对话已结束"提示，
-    #       而不是单纯隐藏输入框
     next_round = len(reply_outs) + 1
     if bottle.status != "picked":
         next_round_is_mine = False

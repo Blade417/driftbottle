@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, status
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.schemas.user import SendCodeRequest, RegisterRequest, UserLogin, UserOut, Token
@@ -8,12 +8,15 @@ from app.services.auth_service import (
 )
 from app.api.deps import get_current_user
 from app.models.user import User
+from app.limiter import limiter
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
 @router.post("/send-code")
+@limiter.limit("1/minute;5/hour")
 async def send_code(
+    request: Request,
     data: SendCodeRequest,
     background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
@@ -25,7 +28,8 @@ async def send_code(
 
 
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-async def register(data: RegisterRequest, db: AsyncSession = Depends(get_db)):
+@limiter.limit("5/hour")
+async def register(request: Request, data: RegisterRequest, db: AsyncSession = Depends(get_db)):
     if not verify_register_code(data.email, data.code):
         raise HTTPException(status_code=400, detail="验证码无效或已过期")
     try:
@@ -36,7 +40,8 @@ async def register(data: RegisterRequest, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/login", response_model=Token)
-async def login(data: UserLogin, db: AsyncSession = Depends(get_db)):
+@limiter.limit("10/minute;50/hour")
+async def login(request: Request, data: UserLogin, db: AsyncSession = Depends(get_db)):
     user = await authenticate_user(db, data.email, data.password)
     if not user:
         raise HTTPException(status_code=401, detail="邮箱或密码错误")

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from app.database import get_db
@@ -9,6 +9,8 @@ from app.services.reply_service import create_reply, get_replies_by_bottle
 from app.api.deps import get_current_user
 from app.models.user import User
 from app.models.reply import Reply
+from app.limiter import limiter
+from slowapi.util import get_remote_address
 
 router = APIRouter(prefix="/api/bottles", tags=["bottles"])
 
@@ -26,8 +28,17 @@ def _make_bottle_out(bottle, reply_count: int = 0) -> BottleOut:
     )
 
 
+def _user_or_ip_key(request: Request) -> str:
+    user = getattr(request.state, "current_user", None)
+    if user is not None:
+        return f"user:{user.id}"
+    return f"ip:{get_remote_address(request)}"
+
+
 @router.post("", response_model=BottleOut, status_code=status.HTTP_201_CREATED)
+@limiter.limit("10/minute", key_func=_user_or_ip_key)
 async def throw_bottle(
+    request: Request,
     data: BottleCreate,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -41,7 +52,9 @@ async def throw_bottle(
 
 
 @router.get("/pick", response_model=BottleOut)
+@limiter.limit("10/minute", key_func=_user_or_ip_key)
 async def pick_bottle(
+    request: Request,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -130,7 +143,9 @@ async def bottle_detail(
 
 
 @router.post("/{bottle_id}/reply", response_model=ReplyOut, status_code=status.HTTP_201_CREATED)
+@limiter.limit("30/minute", key_func=_user_or_ip_key)
 async def reply_to_bottle(
+    request: Request,
     bottle_id: str,
     data: ReplyCreate,
     current_user: User = Depends(get_current_user),

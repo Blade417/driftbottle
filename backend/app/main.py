@@ -2,8 +2,12 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 from app.database import engine, Base
 from app.api import auth, bottles, reports
+from app.limiter import limiter
 from pathlib import Path
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
@@ -18,9 +22,14 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="DriftBottle 漂流瓶日记", version="0.1.0", lifespan=lifespan)
 
+# 限流
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:8000"],
+    allow_origins=["http://localhost:3000", "http://localhost:8000", "https://driftmsg.top", "http://driftmsg.top"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

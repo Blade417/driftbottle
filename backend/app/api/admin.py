@@ -192,7 +192,6 @@ async def get_bottle_detail(
     if not bottle:
         raise HTTPException(status_code=404, detail="瓶子不存在")
 
-    author = users_map_get(bottle.author_id, db)
     author = (await db.execute(select(User).where(User.id == bottle.author_id))).scalar_one()
     picker = None
     if bottle.picked_by:

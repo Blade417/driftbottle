@@ -56,9 +56,13 @@ async def pick_random_bottle(db: AsyncSession, user_id: str) -> Bottle | None:
 
 async def get_my_bottles(db: AsyncSession, user_id: str, type_: str = "thrown") -> list[Bottle]:
     if type_ == "picked":
-        query = select(Bottle).where(Bottle.picked_by == user_id).order_by(Bottle.picked_at.desc())
+        query = select(Bottle).where(
+            and_(Bottle.picked_by == user_id, Bottle.status != "removed")
+        ).order_by(Bottle.picked_at.desc())
     else:
-        query = select(Bottle).where(Bottle.author_id == user_id).order_by(Bottle.created_at.desc())
+        query = select(Bottle).where(
+            and_(Bottle.author_id == user_id, Bottle.status != "removed")
+        ).order_by(Bottle.created_at.desc())
     result = await db.execute(query)
     return list(result.scalars().all())
 

@@ -86,6 +86,8 @@ async def bottle_detail(
     bottle = await get_bottle_by_id(db, bottle_id)
     if not bottle:
         raise HTTPException(status_code=404, detail="瓶子不存在")
+    if bottle.status == "removed":
+        raise HTTPException(status_code=404, detail="瓶子不存在或已下架")
     if current_user.id not in (bottle.author_id, bottle.picked_by):
         raise HTTPException(status_code=403, detail="你没有权限查看这个瓶子")
     await db.refresh(bottle, ["author", "picker"])

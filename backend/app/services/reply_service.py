@@ -36,6 +36,8 @@ async def create_reply(db: AsyncSession, bottle: Bottle, author_id: str, content
 
 async def get_replies_by_bottle(db: AsyncSession, bottle_id: str) -> list[Reply]:
     result = await db.execute(
-        select(Reply).where(Reply.bottle_id == bottle_id).order_by(Reply.round)
+        select(Reply).where(
+            and_(Reply.bottle_id == bottle_id, Reply.deleted_at.is_(None))
+        ).order_by(Reply.round)
     )
     return list(result.scalars().all())

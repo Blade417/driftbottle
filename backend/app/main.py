@@ -7,6 +7,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from app.database import engine, Base
 from app.api import auth, bottles, reports
+from app.api.admin import router as admin_router
 from app.limiter import limiter
 from pathlib import Path
 
@@ -38,6 +39,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(bottles.router)
 app.include_router(reports.router)
+app.include_router(admin_router)
 
 
 @app.get("/api/health")

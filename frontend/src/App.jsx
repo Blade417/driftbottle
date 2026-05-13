@@ -1,12 +1,19 @@
 import { Routes, Route, Link } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { AdminUserProvider } from './contexts/AdminUserContext'
 import RequireAuth from './components/RequireAuth'
+import AdminGuard from './components/AdminGuard'
+import AdminLayout from './components/AdminLayout'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Mine from './pages/Mine'
 import Write from './pages/Write'
 import Pick from './pages/Pick'
 import Detail from './pages/Detail'
+import AdminOverview from './pages/admin/AdminOverview'
+import AdminBottles from './pages/admin/AdminBottles'
+import AdminUsers from './pages/admin/AdminUsers'
+import AdminReports from './pages/admin/AdminReports'
 import { getAvatarUrl } from './utils/avatar'
 
 export default function App() {
@@ -19,18 +26,33 @@ export default function App() {
         <div className="wave-bg" />
         {/* 内容 */}
         <div className="relative z-10">
-          <Navbar />
-          <main className="max-w-2xl mx-auto px-4 py-8">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/mine" element={<RequireAuth><Mine /></RequireAuth>} />
-              <Route path="/write" element={<RequireAuth><Write /></RequireAuth>} />
-              <Route path="/pick" element={<RequireAuth><Pick /></RequireAuth>} />
-              <Route path="/bottles/:id" element={<RequireAuth><Detail /></RequireAuth>} />
-            </Routes>
-          </main>
+          <Routes>
+            {/* 前台路由 */}
+            <Route path="/" element={<><Navbar /><main className="max-w-2xl mx-auto px-4 py-8"><Home /></main></>} />
+            <Route path="/login" element={<><Navbar /><main className="max-w-2xl mx-auto px-4 py-8"><Login /></main></>} />
+            <Route path="/register" element={<><Navbar /><main className="max-w-2xl mx-auto px-4 py-8"><Register /></main></>} />
+            <Route path="/mine" element={<RequireAuth><><Navbar /><main className="max-w-2xl mx-auto px-4 py-8"><Mine /></main></></RequireAuth>} />
+            <Route path="/write" element={<RequireAuth><><Navbar /><main className="max-w-2xl mx-auto px-4 py-8"><Write /></main></></RequireAuth>} />
+            <Route path="/pick" element={<RequireAuth><><Navbar /><main className="max-w-2xl mx-auto px-4 py-8"><Pick /></main></></RequireAuth>} />
+            <Route path="/bottles/:id" element={<RequireAuth><><Navbar /><main className="max-w-2xl mx-auto px-4 py-8"><Detail /></main></></RequireAuth>} />
+
+            {/* 后台路由 */}
+            <Route
+              path="/admin"
+              element={
+                <AdminUserProvider>
+                  <AdminGuard />
+                </AdminUserProvider>
+              }
+            >
+              <Route element={<AdminLayout />}>
+                <Route index element={<AdminOverview />} />
+                <Route path="bottles" element={<AdminBottles />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="reports" element={<AdminReports />} />
+              </Route>
+            </Route>
+          </Routes>
         </div>
       </div>
     </AuthProvider>
@@ -85,6 +107,11 @@ function Navbar() {
               <Link to="/mine" className="text-sm text-white/60 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/5">
                 我的瓶子
               </Link>
+              {user.is_admin && (
+                <Link to="/admin" className="text-sm text-white/60 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/5">
+                  后台
+                </Link>
+              )}
               <div className="flex items-center gap-2">
                 <img
                   src={getAvatarUrl(user.avatar_seed || String(user.id))}

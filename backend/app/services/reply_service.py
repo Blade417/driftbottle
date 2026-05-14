@@ -2,9 +2,11 @@ from sqlalchemy import select, func, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.reply import Reply
 from app.models.bottle import Bottle
+from app.services.moderation import assert_clean
 
 
 async def create_reply(db: AsyncSession, bottle: Bottle, author_id: str, content: str) -> Reply:
+    assert_clean(content)
     if author_id not in (bottle.author_id, bottle.picked_by):
         raise ValueError("只有对话参与者可以回信")
 

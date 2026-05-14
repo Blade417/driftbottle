@@ -1,14 +1,26 @@
-from datetime import datetime, timezone, date
+from datetime import datetime, timezone, timedelta
 from sqlalchemy import select, func, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.bottle import Bottle
+from app.services.moderation import assert_clean
 
 DAILY_THROW_LIMIT = 3
 DAILY_PICK_LIMIT = 5
 
+# 用户体验意义上的"今天"按北京时间算（凌晨 0 点重置，而非 UTC 0 点 = 北京 8 点）
+CN_TZ = timezone(timedelta(hours=8))
+
+
+def _today_start_utc() -> datetime:
+    """北京时间今日 00:00 对应的 UTC 时刻。"""
+    now_cn = datetime.now(CN_TZ)
+    midnight_cn = now_cn.replace(hour=0, minute=0, second=0, microsecond=0)
+    return midnight_cn.astimezone(timezone.utc)
+
 
 async def create_bottle(db: AsyncSession, author_id: str, content: str) -> Bottle:
-    today_start = datetime.combine(date.today(), datetime.min.time(), tzinfo=timezone.utc)
+    assert_clean(content)
+    today_start = _today_start_utc()
     result = await db.execute(
         select(func.count()).where(
             and_(Bottle.author_id == author_id, Bottle.created_at >= today_start)
@@ -25,7 +37,7 @@ async def create_bottle(db: AsyncSession, author_id: str, content: str) -> Bottl
 
 
 async def pick_random_bottle(db: AsyncSession, user_id: str) -> Bottle | None:
-    today_start = datetime.combine(date.today(), datetime.min.time(), tzinfo=timezone.utc)
+    today_start = _today_start_utc()
     result = await db.execute(
         select(func.count()).where(
             and_(Bottle.picked_by == user_id, Bottle.picked_at >= today_start)

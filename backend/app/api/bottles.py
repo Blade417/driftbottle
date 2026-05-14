@@ -6,6 +6,7 @@ from app.schemas.bottle import BottleCreate, BottleOut, BottleDetail, ReplyOut
 from app.schemas.reply import ReplyCreate
 from app.services.bottle_service import create_bottle, pick_random_bottle, get_my_bottles, get_bottle_by_id
 from app.services.reply_service import create_reply, get_replies_by_bottle
+from app.services.moderation import ModerationError
 from app.api.deps import get_current_user
 from app.models.user import User
 from app.models.reply import Reply
@@ -37,6 +38,8 @@ async def throw_bottle(
 ):
     try:
         bottle = await create_bottle(db, current_user.id, data.content)
+    except ModerationError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except ValueError as e:
         raise HTTPException(status_code=429, detail=str(e))
     await db.refresh(bottle, ["author", "picker"])

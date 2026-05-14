@@ -18,6 +18,7 @@ export default function Register() {
   const [email, setEmail] = useState('')
   const [code, setCode] = useState('')
   const [password, setPassword] = useState('')
+  const [consent, setConsent] = useState(false)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [countdown, setCountdown] = useState(0)
@@ -58,6 +59,10 @@ export default function Register() {
 
   const handleRegister = async (e) => {
     e.preventDefault()
+    if (!consent) {
+      setError('请先阅读并同意《用户协议》和《隐私政策》')
+      return
+    }
     setError('')
     setSubmitting(true)
     try {
@@ -191,9 +196,23 @@ export default function Register() {
                 {error}
               </div>
             )}
+            <label className="flex items-start gap-2 text-xs text-white/60 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={consent}
+                onChange={e => setConsent(e.target.checked)}
+                className="mt-0.5 accent-sky-500"
+              />
+              <span>
+                我已阅读并同意{' '}
+                <Link to="/terms" target="_blank" className="text-sky-400 hover:text-sky-300">《用户协议》</Link>
+                {' '}和{' '}
+                <Link to="/privacy" target="_blank" className="text-sky-400 hover:text-sky-300">《隐私政策》</Link>
+              </span>
+            </label>
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || !consent}
               className="btn-primary"
             >
               {submitting ? '注册中...' : '完成注册'}

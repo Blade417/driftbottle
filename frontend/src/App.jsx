@@ -14,6 +14,8 @@ import AdminOverview from './pages/admin/AdminOverview'
 import AdminBottles from './pages/admin/AdminBottles'
 import AdminUsers from './pages/admin/AdminUsers'
 import AdminReports from './pages/admin/AdminReports'
+import Terms from './pages/Terms'
+import Privacy from './pages/Privacy'
 import { getAvatarUrl } from './utils/avatar'
 
 export default function App() {
@@ -28,13 +30,15 @@ export default function App() {
         <div className="relative z-10">
           <Routes>
             {/* 前台路由 */}
-            <Route path="/" element={<><Navbar /><main className="max-w-2xl mx-auto px-4 py-8"><Home /></main></>} />
-            <Route path="/login" element={<><Navbar /><main className="max-w-2xl mx-auto px-4 py-8"><Login /></main></>} />
-            <Route path="/register" element={<><Navbar /><main className="max-w-2xl mx-auto px-4 py-8"><Register /></main></>} />
-            <Route path="/mine" element={<RequireAuth><><Navbar /><main className="max-w-2xl mx-auto px-4 py-8"><Mine /></main></></RequireAuth>} />
-            <Route path="/write" element={<RequireAuth><><Navbar /><main className="max-w-2xl mx-auto px-4 py-8"><Write /></main></></RequireAuth>} />
-            <Route path="/pick" element={<RequireAuth><><Navbar /><main className="max-w-2xl mx-auto px-4 py-8"><Pick /></main></></RequireAuth>} />
-            <Route path="/bottles/:id" element={<RequireAuth><><Navbar /><main className="max-w-2xl mx-auto px-4 py-8"><Detail /></main></></RequireAuth>} />
+            <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
+            <Route path="/login" element={<PublicLayout><Login /></PublicLayout>} />
+            <Route path="/register" element={<PublicLayout><Register /></PublicLayout>} />
+            <Route path="/mine" element={<RequireAuth><PublicLayout><Mine /></PublicLayout></RequireAuth>} />
+            <Route path="/write" element={<RequireAuth><PublicLayout><Write /></PublicLayout></RequireAuth>} />
+            <Route path="/pick" element={<RequireAuth><PublicLayout><Pick /></PublicLayout></RequireAuth>} />
+            <Route path="/bottles/:id" element={<RequireAuth><PublicLayout><Detail /></PublicLayout></RequireAuth>} />
+            <Route path="/terms" element={<PublicLayout><Terms /></PublicLayout>} />
+            <Route path="/privacy" element={<PublicLayout><Privacy /></PublicLayout>} />
 
             {/* 后台路由 */}
             <Route
@@ -56,6 +60,36 @@ export default function App() {
         </div>
       </div>
     </AuthProvider>
+  )
+}
+
+function PublicLayout({ children }) {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <main className="flex-1 max-w-2xl w-full mx-auto px-4 py-8">{children}</main>
+      <Footer />
+    </div>
+  )
+}
+
+function Footer() {
+  return (
+    <footer className="mt-12 py-6 border-t border-white/5 text-center text-xs text-white/40 space-y-2">
+      <div className="flex justify-center gap-4">
+        <Link to="/terms" className="hover:text-white/70 transition-colors">用户协议</Link>
+        <span className="text-white/20">·</span>
+        <Link to="/privacy" className="hover:text-white/70 transition-colors">隐私政策</Link>
+        <span className="text-white/20">·</span>
+        <a href="mailto:944739287@qq.com" className="hover:text-white/70 transition-colors">联系我们</a>
+      </div>
+      <div>
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="hover:text-white/70 transition-colors">
+          ICP 备案: 审核中
+        </a>
+      </div>
+      <div>© 2026 漂流瓶日记</div>
+    </footer>
   )
 }
 

@@ -1,0 +1,28 @@
+[Unit]
+Description=DriftBottle FastAPI Backend
+After=network.target
+
+[Service]
+Type=simple
+User=driftbottle
+Group=driftbottle
+WorkingDirectory=/opt/driftbottle/backend
+Environment="PYTHONUNBUFFERED=1"
+Environment="PYTHONPATH=/opt/driftbottle/backend"
+ExecStart=/opt/driftbottle/backend/venv/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+
+# 加固
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/driftbottle/backend
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+
+[Install]
+WantedBy=multi-user.target
